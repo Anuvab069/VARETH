@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VARETH: A Journey Within</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --fg: #f0f0f0;
+      --accent: #ffd700;
+      --card: #1e1e1e;
+      --button: #333;
+      --hover: #444;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background: var(--bg);
+      color: var(--fg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+      position: relative;
+      opacity: 0;
+      animation: fadeIn 1.5s forwards;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 20px;
+      font-size: 2em;
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    #progressWrapper {
+      background: var(--button);
+      height: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background-color: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    #progressText {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.9em;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .question {
+      font-size: 1.2em;
+      margin: 20px 0;
+      opacity: 0;
+      animation: fadeIn 1.5s 0.5s forwards;
+    }
+
+    .options button, #retryButton, #startButton {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background-color: var(--button);
+      border: 2px solid var(--hover);
+      color: var(--fg);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+      font-size: 1em;
+    }
+
+    .options button:hover, #retryButton:hover, #startButton:hover {
+      background-color: var(--hover);
+      transform: scale(1.02);
+    }
+
+    #finalMessage {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1.2em;
+      color: var(--accent);
+      opacity: 0;
+      animation: fadeIn 1.5s 0.9s forwards;
+    }
+
+    #startContainer {
+      text-align: center;
+      font-size: 1.4em;
+      margin-bottom: 20px;
+    }
+
+    #credit {
+      text-align: center;
+      font-size: 0.9em;
+      color: #888;
+      margin-top: 10px;
+      opacity: 0;
+      animation: fadeIn 1.5s 1.2s forwards;
+    }
+
+    #retryButton, #quizContainer, #progressWrapper {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes shimmer {
+      100% {
+        left: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>VARETH: A Journey Within</h1>
+    <div id="startContainer">
+      Ready for the truth?
+      <br><br>
+      <button id="startButton">Begin</button>
+    </div>
+    <div id="progressWrapper">
+      <div id="progressBar"></div>
+      <div id="progressText"></div>
+    </div>
+    <div id="quizContainer"></div>
+    <div id="finalMessage"></div>
+    <div id="credit">Created by Anuvab Karmakar</div>
+    <button id="retryButton" onclick="location.reload()">Begin Again</button>
+
+    <audio id="bgMusic" autoplay loop>
+      <source src="https://cdn.pixabay.com/download/audio/2022/10/11/audio_ba33db34f8.mp3?filename=suspense-background-ambient-117997.mp3" type="audio/mpeg">
+    </audio>
+
+  </div>
+
+  <script>
+    const questions = [
+      { q: "You awaken in stillness. What do you seek first?", a: ["Purpose", "Peace", "Escape", "Nothing"], correct: 0 },
+      { q: "A voice asks: Do you wait or act?", a: ["Act", "Wait", "Hide", "Wander"], correct: 0 },
+      { q: "What is the shape of your fear?", a: ["Unknown", "Past", "Future", "Myself"], correct: 3 },
+      { q: "What reflects in your mind’s mirror?", a: ["Truth", "Desire", "Doubt", "Clarity"], correct: 0 },
+      { q: "You are offered silence. What do you give in return?", a: ["Stillness", "Music", "Your voice", "A scream"], correct: 0 },
+      { q: "A storm brews. What anchors you?", a: ["Faith", "Reason", "Memory", "Will"], correct: 3 },
+      { q: "Shadows whisper your name. Do you respond?", a: ["Yes", "No", "Ignore", "Challenge them"], correct: 3 },
+      { q: "A mirror cracks. What do you see behind it?", a: ["Chaos", "Self", "Others", "Light"], correct: 1 },
+      { q: "A door opens with no walls. Do you enter?", a: ["Yes", "No", "Wait", "Close it"], correct: 0 },
+      { q: "Your past calls. Do you answer?", a: ["Yes", "Ignore", "Rewrite it", "Let it go"], correct: 3 },
+      { q: "Pain approaches. How do you greet it?", a: ["With strength", "With silence", "With questions", "With compassion"], correct: 3 },
+      { q: "You must choose: vision or voice?", a: ["Vision", "Voice", "Neither", "Both"], correct: 1 },
+      { q: "You are falling. What do you reach for?", a: ["Hope", "Ground", "Flight", "Nothing"], correct: 0 },
+      { q: "An empty page lies before you. What do you write?", a: ["Truth", "Dream", "Fear", "Name"], correct: 0 },
+      { q: "You’re asked to let go. What remains?", a: ["Essence", "Desire", "Shadow", "Form"], correct: 0 },
+      { q: "What is more real: the path or the walker?", a: ["Path", "Walker", "Neither", "Both"], correct: 1 },
+      { q: "The world fades. What burns within?", a: ["Light", "Memory", "Will", "Question"], correct: 2 },
+      { q: "The last lock turns. What is revealed?", a: ["Self", "Truth", "Illusion", "All"], correct: 0 },
+      { q: "You are nothing. What do you become?", a: ["Everything", "Still", "Change", "Answer"], correct: 0 },
+      { q: "The journey ends. Or does it?", a: ["Yes", "No", "Maybe", "Begin again"], correct: 3 }
+    ];
+
+    let current = 0;
+    let score = 0;
+    const quiz = document.getElementById("quizContainer");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const finalMessage = document.getElementById("finalMessage");
+    const credit = document.getElementById("credit");
+
+    document.getElementById("startButton").onclick = () => {
+  const music = document.getElementById("bgMusic");
+  music.volume = 1.0;
+  music.play();
+
+      document.getElementById("startContainer").style.display = "none";
+      document.getElementById("quizContainer").style.display = "block";
+      document.getElementById("progressWrapper").style.display = "block";
+      showQuestion();
+    };
+
+    function showQuestion() {
+      const q = questions[current];
+      progressBar.style.width = `${((current+1)/questions.length)*100}%`;
+      progressText.innerText = `${questions.length - current} left`;
+
+      quiz.innerHTML = `<div class='question'>${q.q}</div><div class='options'>${q.a.map((opt, i) => `<button onclick='nextQuestion(${i})'>${opt}</button>`).join('')}</div>`;
+    }
+
+    function nextQuestion(selected) {
+      if (selected === questions[current].correct) {
+        score++;
+      }
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        quiz.innerHTML = "";
+        document.getElementById("progressWrapper").style.display = "none";
+        finalMessage.innerText = (score === questions.length)
+          ? "You chose truth at every turn. You are whole."
+          : `You answered ${score} of ${questions.length} in alignment. Reflection is your guide.`;
+        document.getElementById("retryButton").style.display = "block";
+        credit.style.display = "block";
+      }
+    }
+  
+    function setVolume(level) {
+      const music = document.getElementById("bgMusic");
+      music.volume = level;
+    }
+</script>
+</body>
+</html>
