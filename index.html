@@ -174,10 +174,15 @@
     <audio id="bgMusic" autoplay loop>
       <source src="https://cdn.pixabay.com/download/audio/2022/10/11/audio_ba33db34f8.mp3?filename=suspense-background-ambient-117997.mp3" type="audio/mpeg">
     </audio>
-
+    <div style="text-align: center; margin-top: 15px;">
+  <label for="volumeControl">Volume:</label>
+  <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="1" style="width: 80%;">
+</div>
   </div>
 
-  <script>
+  document.getElementById("volumeControl").addEventListener("input", (e) => {
+  setVolume(e.target.value);
+});<script>
     const questions = [
       { q: "You awaken in stillness. What do you seek first?", a: ["Purpose", "Peace", "Escape", "Nothing"], correct: 0 },
       { q: "A voice asks: Do you wait or act?", a: ["Act", "Wait", "Hide", "Wander"], correct: 0 },
